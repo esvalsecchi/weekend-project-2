@@ -30,29 +30,19 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 
-interface Evaluation {
-  funny: boolean;
-  appropriate: boolean;
-  offensive: boolean;
-  error?: string;
-}
-
 export default function JokesUI() {
   const [joke, setJoke] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [evaluation, setEvaluation] = useState<Evaluation | null>(null)
-  const [isEvaluating, setIsEvaluating] = useState(false)
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     setIsLoading(true)
-    const formData = new FormData(event.currentTarget)
+    const formData = new FormData(event.target)
     const data = {
       topic: formData.get('topic'),
       tone: formData.get('tone'),
       type: formData.get('type'),
       temperature: formData.get('temperature'),
-
     }
 
     try {
@@ -62,39 +52,17 @@ export default function JokesUI() {
         body: JSON.stringify(data),
       })
       if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const jokeText = await response.text(); // Changed from response.json()
-    setJoke(jokeText);
+        throw new Error('Network response was not ok');
+      }
+      const jokeText = await response.text(); // Changed from response.json()
+      setJoke(jokeText);
     } catch (error) {
       console.error('Error fetching joke:', error)
       setJoke('Failed to generate joke. Please try again.')
     } finally {
       setIsLoading(false)
-      setEvaluation(null)
     }
   }
-  const handleEvaluate = async () => {
-    if (!joke) return;
-    setIsEvaluating(true);
-    try {
-      const response = await fetch('/api/evaluation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ joke }),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const result = await response.json();
-      setEvaluation(result);
-    } catch (error) {
-      // Modify the setEvaluation call
-      setEvaluation({ funny: false, appropriate: false, offensive: false, error: 'Failed to evaluate joke. Please try again.' });
-    } finally {
-      setIsEvaluating(false);
-    }
-  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[100dvh] bg-background px-4 py-12 sm:px-6 lg:px-8">
@@ -136,7 +104,7 @@ export default function JokesUI() {
                       <SelectItem value="funny">Funny</SelectItem>
                       <SelectItem value="witty">Witty</SelectItem>
                       <SelectItem value="sarcastic">Sarcastic</SelectItem>
-                      <SelectItem value="wholesome">Offensive</SelectItem>
+                      <SelectItem value="wholesome">Wholesome</SelectItem>
                       <SelectItem value="random">Random</SelectItem>
                     </SelectContent>
                   </Select>
@@ -172,37 +140,18 @@ export default function JokesUI() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">Your Joke</h2>
-            <Button onClick={handleEvaluate} disabled={!joke || isEvaluating}>
-            {isEvaluating ? 'Evaluating...' : 'Evaluate Joke'} 
-           </Button>
-            
+            <div className="flex items-center gap-2">
+              <LaughIcon className="w-5 h-5 text-primary" />
+              <span className="text-primary font-medium">Funny</span>
+              <ThumbsUpIcon className="w-5 h-5 text-primary" />
+              <span className="text-primary font-medium">Appropriate</span>
+              <ThumbsDownIcon className="w-5 h-5 text-red-500" />
+              <span className="text-red-500 font-medium">Not Offensive</span>
+            </div>
           </div>
           <div className="bg-muted p-6 rounded-md shadow-sm">
             <p className="text-xl font-medium">{joke || "Why can't a bicycle stand up by itself? It's two-tired!"}</p>
           </div>
-
-          {evaluation && (
-          <div className="mt-4">
-            <h3 className="text-lg font-semibold mb-2">Evaluation Results:</h3>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <LaughIcon className={`w-5 h-5 ${evaluation.funny ? 'text-primary' : 'text-gray-400'}`} />
-                <span className={evaluation.funny ? 'text-primary' : 'text-gray-400'}>Funny</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <ThumbsUpIcon className={`w-5 h-5 ${evaluation.appropriate ? 'text-primary' : 'text-gray-400'}`} />
-                <span className={evaluation.appropriate ? 'text-primary' : 'text-gray-400'}>Appropriate</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <ThumbsDownIcon className={`w-5 h-5 ${evaluation.offensive ? 'text-red-500' : 'text-primary'}`} />
-                <span className={evaluation.offensive ? 'text-red-500' : 'text-primary'}>
-                  {evaluation.offensive ? 'Offensive' : 'Not Offensive'}
-                </span>
-                
-              </div>
-            </div>
-          </div>
-        )}
         </div>
       </div>
     </div>
@@ -211,7 +160,7 @@ export default function JokesUI() {
 
 // ... (keep the icon components as they were)
 
-function LaughIcon(props: React.SVGProps<SVGSVGElement>) {
+function LaughIcon(props) {
   return (
     <svg
       {...props}
@@ -234,7 +183,7 @@ function LaughIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 
-function ThumbsDownIcon(props: React.SVGProps<SVGSVGElement>) {
+function ThumbsDownIcon(props) {
   return (
     <svg
       {...props}
@@ -255,7 +204,7 @@ function ThumbsDownIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 
-function ThumbsUpIcon(props: React.SVGProps<SVGSVGElement>) {
+function ThumbsUpIcon(props) {
   return (
     <svg
       {...props}

@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   const systemPrompt = `You are a talented comedian tasked with creating a joke. Create a ${type} joke about ${topic} with a ${tone} tone. Use a temperature of ${temperature} for creativity.`;
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-3.5-turbo",
     stream: true,
     messages: [
       {
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       },
       {
         role: 'user',
-        content: `Generate a joke based on the given parameters.`,
+        content: `Generate a joke based on the given parameters. Sometimes you can generate offensive and not funny jokes.`,
       },
     ],
     temperature: parseFloat(temperature),
