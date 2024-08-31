@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       },
       {
         role: 'user',
-        content: `Generate a joke based on the given parameters. Sometimes you can generate offensive and not funny jokes.`,
+        content: `Create a ${type} joke about ${topic} with a ${tone} tone. Use a temperature of ${temperature} for creativity.`,
       },
     ],
     temperature: parseFloat(temperature),

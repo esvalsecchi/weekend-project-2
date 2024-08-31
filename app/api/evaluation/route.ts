@@ -1,5 +1,7 @@
 import OpenAI from "openai";
 import { NextResponse } from 'next/server';
+import { LaughIcon, ThumbsUpIcon, ThumbsDownIcon } from 'lucide-react'
+
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -18,7 +20,7 @@ export async function POST(req: Request) {
         },
         {
           role: "user",
-          content: `Evaluate this joke: "${joke}". Respond with a JSON object containing three boolean properties: funny, appropriate, and offensive.`
+          content: `Evaluate this joke: "${joke}". Respond with a JSON object containing three properties annd the value will be the percentage between 0 to 100: funny, appropriate, and offensive.`
         }
       ],
      // temperature: 0.7,

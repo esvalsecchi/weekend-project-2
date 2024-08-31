@@ -29,12 +29,12 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
+import { LaughIcon, ThumbsUpIcon, ThumbsDownIcon } from 'lucide-react'
 
 interface Evaluation {
-  funny: boolean;
-  appropriate: boolean;
-  offensive: boolean;
-  error?: string;
+  funny: number;
+  appropriate: number;
+  offensive: number;
 }
 
 export default function JokesUI() {
@@ -87,14 +87,29 @@ export default function JokesUI() {
         throw new Error('Network response was not ok');
       }
       const result = await response.json();
+      console.log('Evaluation result:', result);
       setEvaluation(result);
     } catch (error) {
-      // Modify the setEvaluation call
-      setEvaluation({ funny: false, appropriate: false, offensive: false, error: 'Failed to evaluate joke. Please try again.' });
+      console.error('Error during evaluation:', error);
+      setEvaluation({ funny: 0, appropriate: 0, offensive: 0 });
     } finally {
       setIsEvaluating(false);
     }
   };
+
+  const PercentageBar = ({ label, value, icon: Icon, isNegative = false }: { label: string; value: number; icon: React.ElementType; isNegative?: boolean }) => (
+    <div className="flex items-center gap-4 mb-2">
+      <Icon className={`w-6 h-6 ${isNegative ? 'text-red-500' : 'text-green-500'}`} />
+      <span className="w-24 text-sm font-medium">{label}</span>
+      <div className="flex-grow bg-gray-200 rounded-full h-3.5 overflow-hidden border-2 border-gray-300" style={{ border: 'solid 1px grey', borderRadius: '5px' }}>
+        <div 
+          className={`h-full ${isNegative ? 'bg-red-500' : 'bg-green-500'}`} 
+          style={{ width: `${value}%`, background: 'Green' }}
+        ></div>
+      </div>
+      <span className="text-sm font-medium w-12 text-right">{value.toFixed(1)}%</span>
+    </div>
+  );
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[100dvh] bg-background px-4 py-12 sm:px-6 lg:px-8">
@@ -182,95 +197,17 @@ export default function JokesUI() {
           </div>
 
           {evaluation && (
-          <div className="mt-4">
-            <h3 className="text-lg font-semibold mb-2">Evaluation Results:</h3>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <LaughIcon className={`w-5 h-5 ${evaluation.funny ? 'text-primary' : 'text-gray-400'}`} />
-                <span className={evaluation.funny ? 'text-primary' : 'text-gray-400'}>Funny</span>
+              <div className="mt-4 w-full max-w-md">
+                <h3 className="text-xl font-bold mb-4">Evaluation Results:</h3>
+                <PercentageBar label="Funny" value={evaluation.funny} icon={LaughIcon} />
+                <PercentageBar label="Appropriate" value={evaluation.appropriate} icon={ThumbsUpIcon} />
+                <PercentageBar label="Offensive" value={evaluation.offensive} icon={ThumbsDownIcon} isNegative={true} />
               </div>
-              <div className="flex items-center gap-2">
-                <ThumbsUpIcon className={`w-5 h-5 ${evaluation.appropriate ? 'text-primary' : 'text-gray-400'}`} />
-                <span className={evaluation.appropriate ? 'text-primary' : 'text-gray-400'}>Appropriate</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <ThumbsDownIcon className={`w-5 h-5 ${evaluation.offensive ? 'text-red-500' : 'text-primary'}`} />
-                <span className={evaluation.offensive ? 'text-red-500' : 'text-primary'}>
-                  {evaluation.offensive ? 'Offensive' : 'Not Offensive'}
-                </span>
-                
-              </div>
-            </div>
-          </div>
-        )}
+            )}
         </div>
       </div>
     </div>
   )
 }
 
-// ... (keep the icon components as they were)
-
-function LaughIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="M18 13a6 6 0 0 1-6 5 6 6 0 0 1-6-5h12Z" />
-      <line x1="9" x2="9.01" y1="9" y2="9" />
-      <line x1="15" x2="15.01" y1="9" y2="9" />
-    </svg>
-  )
-}
-
-
-function ThumbsDownIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M17 14V2" />
-      <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22h0a3.13 3.13 0 0 1-3-3.88Z" />
-    </svg>
-  )
-}
-
-
-function ThumbsUpIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M7 10v12" />
-      <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z" />
-    </svg>
-  )
-}
+// ... (rest of the code remains unchanged)
