@@ -29,6 +29,10 @@ To consolidate the knowledge acquired this week, students should complete the fo
 - **AI Evaluation Feature:**
   - Add functionality for the AI to evaluate whether the generated jokes are "funny", "appropriate", "offensive", or any other criteria you consider important.
   - Experiment with different prompts and system instructions to optimize AI models for subjective classification tasks like humor, appropriateness, offensiveness, etc.
+ 
+  - RESULT: 
+<img width="580" alt="image" src="https://github.com/user-attachments/assets/a4712715-eb68-479a-9516-8b4be01f58de">
+
 
 ## Submission
 
